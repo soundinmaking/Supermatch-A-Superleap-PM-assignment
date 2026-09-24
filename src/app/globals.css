@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+
+  /* Shell layer — the site's own chrome */
+  --shell-bg: #ffffff;
+  --shell-surface: #ffffff;
+  --shell-ink: #171a21;
+  --shell-ink-soft: #6b7280;
+  --shell-accent: #2e9e5c;
+  --shell-accent-2: #3563e0;
+  --shell-border: #e7e6ef;
+  --shell-mesh-1: rgba(46, 158, 92, 0.1);
+  --shell-mesh-2: rgba(53, 99, 224, 0.084);
+
+  /* Match layer — used only in Solution + Live Prototype sections */
+  --match-purple: #7c6ef0;
+  --match-purple-tint: #f6f5fc;
+  --match-purple-border: #d9d3f7;
+  --match-purple-text: #6552d6;
+
+  /* Narrative layer — used only in Branding & Theming */
+  --ember-amber: #c08a2e;
+  --ember-amber-tint: #fbf1df;
+  --ember-rust: #b0553f;
+  --ember-rust-tint: #fbeae4;
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@theme inline {
+  --color-shell-bg: var(--shell-bg);
+  --color-shell-surface: var(--shell-surface);
+  --color-shell-ink: var(--shell-ink);
+  --color-shell-ink-soft: var(--shell-ink-soft);
+  --color-shell-accent: var(--shell-accent);
+  --color-shell-accent-2: var(--shell-accent-2);
+  --color-shell-border: var(--shell-border);
+
+  --color-match-purple: var(--match-purple);
+  --color-match-purple-tint: var(--match-purple-tint);
+  --color-match-purple-border: var(--match-purple-border);
+  --color-match-purple-text: var(--match-purple-text);
+
+  --color-ember-amber: var(--ember-amber);
+  --color-ember-amber-tint: var(--ember-amber-tint);
+  --color-ember-rust: var(--ember-rust);
+  --color-ember-rust-tint: var(--ember-rust-tint);
+
+  --font-sans: var(--font-sans);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --shell-bg: #12141a;
+    --shell-surface: #181b22;
+    --shell-ink: #edeff3;
+    --shell-ink-soft: #9aa1ae;
+    --shell-accent: #45c07f;
+    --shell-accent-2: #6f97f2;
+    --shell-border: #262a33;
+    --shell-mesh-1: rgba(69, 192, 127, 0.12);
+    --shell-mesh-2: rgba(111, 151, 242, 0.108);
+
+    --match-purple: #9b8ff5;
+    --match-purple-tint: #201d33;
+    --match-purple-border: #37325a;
+    --match-purple-text: #b3a8fa;
+
+    --ember-amber: #d9a857;
+    --ember-amber-tint: #2c2313;
+    --ember-rust: #d08872;
+    --ember-rust-tint: #2c1e18;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --shell-bg: #12141a;
+  --shell-surface: #181b22;
+  --shell-ink: #edeff3;
+  --shell-ink-soft: #9aa1ae;
+  --shell-accent: #45c07f;
+  --shell-accent-2: #6f97f2;
+  --shell-border: #262a33;
+  --shell-mesh-1: rgba(69, 192, 127, 0.12);
+  --shell-mesh-2: rgba(111, 151, 242, 0.108);
+
+  --match-purple: #9b8ff5;
+  --match-purple-tint: #201d33;
+  --match-purple-border: #37325a;
+  --match-purple-text: #b3a8fa;
+
+  --ember-amber: #d9a857;
+  --ember-amber-tint: #2c2313;
+  --ember-rust: #d08872;
+  --ember-rust-tint: #2c1e18;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--shell-bg);
+  color: var(--shell-ink);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--match-purple);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--shell-mesh-2);
+}

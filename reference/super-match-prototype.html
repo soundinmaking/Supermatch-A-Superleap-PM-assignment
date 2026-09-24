@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Super Match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧲</text></svg>">
+<style>
+  :root{
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    --page-bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F2F2F5; --ink:#1A1D23; --ink-soft:#767B85; --border:#E7E6EF;
+    --purple-tint:#F6F5FC; --purple:#7C6EF0; --purple-badge:#E9E5FB; --purple-text:#6552D6; --purple-border:#D9D3F7;
+    --blue-tint:#F3F6FC; --blue:#4C7CF0; --blue-badge:#DCE7FC; --blue-text:#3563E0; --blue-border:#D6E2FA;
+    --green-tint:#F1FAF3; --green:#3FAE63; --green-badge:#DCF3E1; --green-text:#2E9457; --green-border:#CDECD6;
+    --amber:#C08A2E; --amber-tint:#FBF1DF; --amber-border:#F0DDB0;
+    --rust:#B0553F; --rust-tint:#FBEAE4; --rust-border:#F0CFC4;
+    --wa-bubble:#DCF8C6; --wa-ink:#1B2418; --wa-meta:#5c7a52;
+    --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --page-bg:#15171C; --surface:#1D2027; --surface-2:#252831; --ink:#EAEBEF; --ink-soft:#9BA0AC; --border:#2C3038;
+      --purple-tint:#221F35; --purple:#9B8FF5; --purple-badge:#2C2748; --purple-text:#B3A8FA; --purple-border:#3A3560;
+      --blue-tint:#1B2636; --blue:#6FA6F5; --blue-badge:#20304A; --blue-text:#8CB8F7; --blue-border:#2C4260;
+      --green-tint:#182821; --green:#63C185; --green-badge:#1E3327; --green-text:#7ED09C; --green-border:#2B4436;
+      --amber:#D9A857; --amber-tint:#332714; --amber-border:#4A3A1E; --rust:#D08872; --rust-tint:#331F19; --rust-border:#4A2E27;
+      --wa-bubble:#28402E; --wa-ink:#E3F3DC; --wa-meta:#8FAE86;
+    }
+  }
+  :root[data-theme="dark"]{
+    --page-bg:#15171C; --surface:#1D2027; --surface-2:#252831; --ink:#EAEBEF; --ink-soft:#9BA0AC; --border:#2C3038;
+    --purple-tint:#221F35; --purple:#9B8FF5; --purple-badge:#2C2748; --purple-text:#B3A8FA; --purple-border:#3A3560;
+    --blue-tint:#1B2636; --blue:#6FA6F5; --blue-badge:#20304A; --blue-text:#8CB8F7; --blue-border:#2C4260;
+    --green-tint:#182821; --green:#63C185; --green-badge:#1E3327; --green-text:#7ED09C; --green-border:#2B4436;
+    --amber:#D9A857; --amber-tint:#332714; --amber-border:#4A3A1E; --rust:#D08872; --rust-tint:#331F19; --rust-border:#4A2E27;
+    --wa-bubble:#28402E; --wa-ink:#E3F3DC; --wa-meta:#8FAE86;
+  }
+  *{box-sizing:border-box;} html{scroll-padding-top:env(safe-area-inset-top,0px);} html,body{height:100%;}
+  body{margin:0; background:var(--page-bg); color:var(--ink); font-family:var(--font); line-height:1.5; -webkit-font-smoothing:antialiased;}
+  :focus-visible{outline:2px solid var(--purple); outline-offset:2px;} button{font-family:inherit;} p{margin:0;}
+
+  .app-frame{max-width:1180px; margin:0 auto; padding:18px 20px 60px;}
+  .topstrip{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding-bottom:14px; margin-bottom:16px; border-bottom:1px solid var(--border); font-size:13px; color:var(--ink-soft);}
+  .brand{font-weight:700; color:var(--ink); display:flex; align-items:center; gap:7px; font-size:14px;}
+  .brand-mark{color:var(--purple); font-size:16px;}
+  .reset-link{background:none; border:0; color:var(--ink-soft); text-decoration:underline; cursor:pointer; font-size:12.5px; padding:2px;}
+  .viewswitch{display:inline-flex; background:var(--surface-2); border-radius:11px; padding:3px; margin-bottom:20px;}
+  .vtab{border:0; background:transparent; padding:8px 15px; border-radius:8px; font-size:13.5px; font-weight:500; color:var(--ink-soft); cursor:pointer;}
+  .vtab.active{background:var(--surface); color:var(--purple-text); box-shadow:0 1px 2px rgba(0,0,0,.06);}
+
+  .layer-card{border-radius:22px; padding:20px 22px; margin-bottom:14px; border:1px solid var(--purple-border); background:var(--purple-tint);}
+  .layer-head{display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;}
+  .layer-icon{width:38px; height:38px; border-radius:10px; border:1px solid var(--purple-border); display:flex; align-items:center; justify-content:center; font-size:18px; flex:none;}
+  .layer-titles{flex:1; min-width:180px;}
+  .layer-titles h1{font-size:19px; font-weight:700; margin:0 0 2px;}
+  .layer-titles p{font-size:13px; color:var(--ink-soft);}
+  .layer-badge{font-size:12px; font-weight:600; padding:6px 13px; border-radius:999px; background:var(--purple-badge); color:var(--purple-text); display:flex; align-items:center; gap:6px; white-space:nowrap;}
+  .chev{font-size:10px; opacity:.6; margin-left:2px; color:var(--ink-soft);}
+  .chip-row,.plain-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;}
+  .chip{display:inline-flex; align-items:center; gap:5px; background:var(--surface); padding:7px 13px; border-radius:999px; font-size:13px; font-weight:500; border:1px solid;}
+  .chip.p{border-color:var(--purple-border); color:var(--purple-text);} .chip.g{border-color:var(--green-border); color:var(--green-text);}
+  .plain{background:var(--surface); border:1px solid var(--border); color:var(--blue-text); padding:7px 13px; border-radius:10px; font-size:13px; font-weight:500;}
+
+  .statusbar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-soft); padding:10px 4px 18px;}
+  .statusbar b{color:var(--ink); font-weight:600;}
+  .statusdot{width:7px; height:7px; border-radius:50%; background:var(--green);} .statusdot.off{background:var(--ink-soft);}
+  .subtabs{display:flex; gap:22px; margin-bottom:18px; border-bottom:1px solid var(--border);}
+  .subtab{padding:9px 2px; font-size:13.5px; color:var(--ink-soft); border-bottom:2px solid transparent; background:none; border-top:0; border-left:0; border-right:0; cursor:pointer;}
+  .subtab.active{color:var(--ink); border-bottom-color:var(--purple); font-weight:600;}
+
+  .settings-panel{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:6px 18px; max-width:640px;}
+  .field-row{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px 0; border-bottom:1px solid var(--border);}
+  .field-row:last-child{border-bottom:0;}
+  .field-label{font-size:13.5px; font-weight:500;} .field-hint{font-size:11.5px; color:var(--ink-soft); margin-top:2px; max-width:34ch;}
+  .field-control{display:flex; align-items:center; gap:8px; flex:none;}
+  .field-control input[type=number]{width:52px; padding:6px 4px; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:inherit; text-align:center; background:var(--surface); color:var(--ink);}
+  .field-control select{padding:6px 10px; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:inherit; background:var(--surface); color:var(--ink);}
+  .switch{position:relative; width:40px; height:23px; flex:none;}
+  .switch input{position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer;}
+  .switch .track{position:absolute; inset:0; background:var(--border); border-radius:999px; transition:background .18s ease;}
+  .switch .knob{position:absolute; top:3px; left:3px; width:17px; height:17px; border-radius:50%; background:var(--surface); box-shadow:0 1px 2px rgba(0,0,0,.25); transition:transform .18s ease;}
+  .switch input:checked + .track{background:var(--purple);} .switch input:checked + .track + .knob{transform:translateX(17px);}
+  .seg{display:flex; border:1px solid var(--border); border-radius:999px; overflow:hidden;}
+  .seg button{border:0; background:var(--surface); color:var(--ink-soft); padding:7px 14px; font-size:13px; font-weight:500; cursor:pointer;}
+  .seg button.active{background:var(--purple-tint); color:var(--purple-text);}
+
+  .stats-row{display:flex; gap:12px; margin-bottom:6px; flex-wrap:wrap;}
+  .stat{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 16px; flex:1; min-width:130px;}
+  .stat-num{font-size:22px; font-weight:700;} .stat-label{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+  .stats-source{font-size:11px; color:var(--ink-soft); margin:0 0 18px;}
+
+  .simrow{margin:0 0 22px;} .simrow-label{font-size:13px; color:var(--ink-soft); margin:0 0 8px; font-weight:500;}
+  .simbuttons{display:flex; gap:10px; flex-wrap:wrap;}
+  .simbtn{background:var(--surface); border:1px solid var(--blue-border); color:var(--blue-text); padding:9px 14px; border-radius:10px; font-size:13.5px; font-weight:500; cursor:pointer;}
+  .simbtn:hover:not(:disabled){border-color:var(--blue);}
+  .simbtn:disabled{opacity:.4; cursor:not-allowed; text-decoration:line-through; color:var(--ink-soft); border-color:var(--border);}
+
+  .workspace{display:grid; grid-template-columns:minmax(280px,340px) 1fr; gap:20px; align-items:start;}
+  @media (max-width:860px){.workspace{grid-template-columns:1fr;}}
+  .panel{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px 16px 6px; margin-bottom:20px;}
+  .panel h2{font-size:12px; color:var(--ink-soft); margin:0 0 10px; font-weight:600;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{text-align:left; font-weight:500; color:var(--ink-soft); font-size:11px; padding-bottom:8px; border-bottom:1px solid var(--border);}
+  td{padding:9px 4px; border-bottom:1px solid var(--border); vertical-align:top;}
+  tbody tr:last-child > td{border-bottom:0;}
+  td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  .clickrow{cursor:pointer;} .clickrow:hover{background:var(--surface-2);}
+  .chev-cell{width:14px; color:var(--ink-soft); font-size:10px;}
+  .expand-td{background:var(--surface-2); padding:10px 12px !important;}
+  .pill{display:inline-block; padding:2px 9px; border-radius:999px; font-size:11px; font-weight:600; white-space:nowrap;}
+  .pill.avail{background:var(--green-badge); color:var(--green-text);} .pill.held{background:var(--amber-tint); color:var(--amber);}
+  .pill.booked{background:var(--surface-2); color:var(--ink-soft);} .pill.active{background:var(--blue-badge); color:var(--blue-text);} .pill.lost{background:var(--surface-2); color:var(--ink-soft);}
+  .lead-name{font-weight:600; font-size:13px;} .lead-wants{color:var(--ink-soft); font-size:11.5px;}
+  .flash{animation:flash .9s ease;} @keyframes flash{0%{background:var(--purple-tint);}100%{background:transparent;}}
+  .link-btn{background:none; border:0; color:var(--purple-text); font-size:12px; font-weight:600; cursor:pointer; padding:6px 0 2px; text-decoration:underline;}
+  .mini-note{font-size:11.5px; color:var(--ink-soft); padding:4px 0;}
+
+  .feed-list{display:flex; flex-direction:column; gap:12px;}
+  .card{border:1px solid var(--border); border-left-width:4px; border-radius:12px; background:var(--surface); padding:14px 16px;}
+  .card.enter{animation:enter .28s ease both;} @keyframes enter{from{opacity:0; transform:translateY(-4px);}to{opacity:1; transform:translateY(0);}}
+  .card.silent{border-left-color:var(--blue);} .card.waiting{border-left-color:var(--amber);} .card.sent{border-left-color:var(--green); opacity:.85;} .card.notsent{border-left-color:var(--rust); opacity:.85;} .card.prompt{border-left-color:var(--purple);}
+  .card-tag{font-size:11px; font-weight:700; letter-spacing:.2px; margin-bottom:6px; display:inline-block;}
+  .tag-silent{color:var(--blue-text);} .tag-waiting{color:var(--amber);} .tag-sent{color:var(--green-text);} .tag-notsent{color:var(--rust);} .tag-prompt{color:var(--purple-text);}
+  .card-body{font-size:13.5px; margin:0 0 4px;}
+  .card-actions{display:flex; gap:8px; margin-top:10px;}
+  .btn{border:0; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer;}
+  .btn.primary{background:var(--purple); color:#fff;} .btn.ghost{background:var(--surface-2); color:var(--ink);} .btn:disabled{opacity:.5; cursor:not-allowed;}
+  .empty-note{color:var(--ink-soft); font-size:13px; padding:6px 2px 14px;}
+  .wa-label{font-size:10.5px; color:var(--ink-soft); display:flex; align-items:center; gap:4px; margin:10px 0 4px;}
+  .wa-bubble{background:var(--wa-bubble); color:var(--wa-ink); padding:8px 10px 15px; border-radius:8px; border-top-left-radius:2px; font-size:13px; position:relative; display:inline-block; max-width:92%;}
+  .wa-meta{display:block; text-align:right; font-size:10px; color:var(--wa-meta); margin-top:4px;}
+
+  .workflow-note{color:var(--ink-soft); font-size:13.5px; margin:0 0 16px; max-width:70ch;}
+  .lead-chips{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .lead-chip{border:1px solid var(--border); background:var(--surface); padding:7px 13px; border-radius:999px; font-size:12.5px; cursor:pointer; display:flex; align-items:center; gap:6px;}
+  .lead-chip.selected{border-color:var(--purple); background:var(--purple-tint); color:var(--purple-text); font-weight:600;}
+  .chip-dot{width:6px; height:6px; border-radius:50%; flex:none;}
+  .record-card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px; max-width:640px;}
+  .record-head{display:flex; gap:12px; align-items:flex-start;}
+  .avatar{width:38px; height:38px; border-radius:50%; background:var(--purple-tint); color:var(--purple-text); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex:none;}
+  .record-id{flex:1; min-width:0;} .record-name{font-weight:700; font-size:14.5px;} .record-meta{font-size:12px; color:var(--ink-soft); margin-top:1px;}
+  .stage-pill{font-size:11px; padding:4px 10px; border-radius:999px; font-weight:600; white-space:nowrap;}
+  .stage-active{background:var(--blue-badge); color:var(--blue-text);} .stage-lost{background:var(--surface-2); color:var(--ink-soft);}
+  .rtabs{display:flex; gap:18px; margin:16px 0 4px; border-bottom:1px solid var(--border);}
+  .rtab{padding-bottom:9px; font-size:12.5px; color:var(--ink-soft); border-bottom:2px solid transparent;}
+  .rtab.active{color:var(--ink); border-bottom-color:var(--purple); font-weight:600;}
+  .timeline{display:flex; flex-direction:column;}
+  .tl-item{padding:12px 0; border-bottom:1px solid var(--border); font-size:13px;} .tl-item:last-child{border-bottom:0;}
+  .tl-item.mini{padding:7px 0; font-size:12.5px;}
+  .tl-time{color:var(--ink-soft); font-size:11px; margin-bottom:3px;}
+  .tl-agent{border-left:3px solid var(--purple); background:var(--purple-tint); border-radius:8px; padding:11px 13px; margin:2px 0;}
+  .tl-agent.mini{padding:8px 10px;}
+  .tl-agent-tag{font-size:11.5px; font-weight:700; margin-bottom:6px; display:inline-block;}
+
+  @media (prefers-reduced-motion:reduce){.card.enter{animation:none;}.flash{animation:none;}}
+</style>
+</head>
+<body>
+<div class="app-frame">
+  <div class="topstrip">
+    <span class="brand"><span class="brand-mark">◆</span> SuperLeap</span>
+    <span>SuperAgents / Super Match</span>
+    <button class="reset-link" id="resetBtn">Reset demo</button>
+  </div>
+  <div class="viewswitch">
+    <button class="vtab active" data-view="admin">Admin panel</button>
+    <button class="vtab" data-view="workflow">Inside the rep's workflow</button>
+  </div>
+
+  <div id="view-admin" class="view">
+    <div class="layer-card">
+      <div class="layer-head">
+        <div class="layer-icon">🧲</div>
+        <div class="layer-titles"><h1>Super Match</h1><p>Part of SuperAgents — matches live inventory against every lead's stated preference</p></div>
+        <div class="layer-badge">● Agent <span class="chev">⌄</span></div>
+      </div>
+      <div class="chip-row"><span class="chip p">✦ Stop a bad visit</span><span class="chip g">✦ Wake a dead lead</span></div>
+      <div class="plain-row"><span class="plain">Reads: SuperOS inventory objects</span><span class="plain">Reads: SuperSense context graph</span><span class="plain">Writes to: Analytics &amp; Dashboards</span></div>
+    </div>
+    <div class="statusbar"><span class="statusdot" id="statusDot"></span><span id="statusText"></span></div>
+    <div class="subtabs">
+      <button class="subtab active" data-sub="live">Live activity</button>
+      <button class="subtab" data-sub="settings">Settings</button>
+    </div>
+
+    <div id="sub-live" class="subview">
+      <div class="stats-row">
+        <div class="stat"><div class="stat-num" id="statVisits">0</div><div class="stat-label">Visits protected</div></div>
+        <div class="stat"><div class="stat-num" id="statMatches">0</div><div class="stat-label">Matches found</div></div>
+        <div class="stat"><div class="stat-num" id="statSent">0</div><div class="stat-label">Messages sent</div></div>
+      </div>
+      <p class="stats-source">Feeds SuperOS → Analytics &amp; Dashboards</p>
+      <div class="simrow">
+        <p class="simrow-label">Simulate an event</p>
+        <div class="simbuttons">
+          <button class="simbtn" id="t1">Someone else books Unit 402</button>
+          <button class="simbtn" id="t2">Unit 508 just opened up</button>
+          <button class="simbtn" id="t3">Unit 210 comes off hold</button>
+          <button class="simbtn" id="t4">Another unit just turned over</button>
+        </div>
+      </div>
+      <div class="workspace">
+        <div class="side">
+          <div class="panel">
+            <h2>Inventory — Riverside Greens <span style="font-weight:400">· click a row</span></h2>
+            <table><thead><tr><th></th><th>Unit</th><th>Config</th><th class="num">Price</th><th>Status</th></tr></thead><tbody id="unitsBody"></tbody></table>
+          </div>
+          <div class="panel">
+            <h2>Leads <span style="font-weight:400">· click a row for their history</span></h2>
+            <table><thead><tr><th></th><th>Lead</th><th>Status</th></tr></thead><tbody id="leadsBody"></tbody></table>
+          </div>
+        </div>
+        <div class="panel feed">
+          <h2>Activity feed</h2>
+          <div class="feed-list" id="feedList"></div>
+          <p class="empty-note" id="emptyNote">Watching 5 units and 7 leads. Click a button above to see what happens.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="sub-settings" class="subview" style="display:none">
+      <div class="settings-panel">
+        <div class="field-row"><div><div class="field-label">Super Match</div><div class="field-hint">Turns the whole agent on or off. Nothing runs while it's off, including anything already waiting for a reply.</div></div>
+          <div class="field-control"><label class="switch"><input type="checkbox" id="onToggle" checked><span class="track"></span><span class="knob"></span></label></div></div>
+        <div class="field-row"><div><div class="field-label">Sending new matches</div><div class="field-hint">Whether a match waits for a tap before it sends, or goes straight out.</div></div>
+          <div class="field-control"><div class="seg" id="modeSeg"><button data-mode="approval" class="active">Needs OK</button><button data-mode="auto">On its own</button></div></div></div>
+        <div class="field-row"><div><div class="field-label">Autonomy threshold</div><div class="field-hint">Offer to switch to sending on its own after this many approvals in a row, unedited.</div></div>
+          <div class="field-control"><input type="number" id="thresholdInput" min="1" max="20" value="3"></div></div>
+        <div class="field-row"><div><div class="field-label">Per-unit outreach cap</div><div class="field-hint">Message at most this many matched leads when one unit reopens, so nobody oversells one flat.</div></div>
+          <div class="field-control"><input type="number" id="capInput" min="1" max="50" value="5"></div></div>
+        <div class="field-row"><div><div class="field-label">Applies to</div><div class="field-hint">Which inventory this rule watches.</div></div>
+          <div class="field-control"><select id="scopeSelect"><option>Riverside Greens</option><option>All active projects</option></select></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-workflow" class="view" style="display:none">
+    <p class="workflow-note">Same live data as the admin panel, shown where a rep actually runs into it: inside a lead's own record, mixed in with everything else already sitting there. Pick anyone below — most records are just a normal history, a couple have Super Match sitting right in the timeline.</p>
+    <div class="lead-chips" id="leadChips"></div>
+    <div id="recordCard"></div>
+  </div>
+</div>
+
+<script>
+const UNIT_ROWS = ['402','405','508','210','310','612','115'];
+const LEAD_ROWS = ['priya','karan','rahul','ananya','vikram','meera','farhan'];
+
+function freshState(){
+  return {
+    on:true, mode:'approval', streak:0, promptShown:false, threshold:3, cap:5,
+    stats:{visits:0, matches:0, sent:0},
+    units:{
+      '402':{config:'3BHK · East', price:'₹92L', status:'Available', visit:'priya'},
+      '405':{config:'3BHK · East', price:'₹94L', status:'Available', visit:null},
+      '508':{config:'2BHK · West', price:'₹68L', status:'Booked', visit:null},
+      '210':{config:'3BHK · West', price:'₹89L', status:'Held', visit:null},
+      '310':{config:'2BHK · East', price:'₹70L', status:'Available', visit:'karan'},
+      '612':{config:'2BHK · East', price:'₹71L', status:'Booked', visit:null},
+      '115':{config:'1BHK · East', price:'₹52L', status:'Booked', visit:null},
+    },
+    leads:{
+      priya:{name:'Priya Sharma', wants:'3BHK East, ~₹90–95L', status:'Active — visit today, Unit 402', tag:'active', phone:'+91 98xxxxxx12', owner:'Karthik N.'},
+      karan:{name:'Karan Verma', wants:'3BHK East, ~₹88–93L', status:'Active — visit tomorrow, Unit 310', tag:'active', phone:'+91 99xxxxxx31', owner:'Karthik N.'},
+      rahul:{name:'Rahul Mehta', wants:'2BHK West, ~₹65–70L', status:`Lost — unit wasn't available`, tag:'lost', phone:'+91 97xxxxxx05', owner:'Meena S.'},
+      ananya:{name:'Ananya Rao', wants:'2BHK West, ~₹65–72L', status:'Lost — asked twice about 508', tag:'lost', phone:'+91 90xxxxxx47', owner:'Karthik N.'},
+      vikram:{name:'Vikram Nair', wants:'3BHK West, ~₹85–90L', status:'Lost — wanted 210, it was on hold', tag:'lost', phone:'+91 96xxxxxx88', owner:'Meena S.'},
+      meera:{name:'Meera Iyer', wants:'2BHK East, ~₹68–72L', status:'Lost — liked 612, already booked', tag:'lost', phone:'+91 93xxxxxx21', owner:'Meena S.'},
+      farhan:{name:'Farhan Sheikh', wants:'1BHK East, ~₹48–54L', status:'Lost — asked about 115 last month', tag:'lost', phone:'+91 91xxxxxx63', owner:'Karthik N.'},
+    },
+    timelines:{
+      priya:[{t:'Today, 9:02 AM', x:'Visit scheduled — Unit 402, 4:00 PM today.'},{t:'3 days ago', x:'Call logged — interested in east-facing units, budget confirmed ~₹92L.'},{t:'6 days ago', x:'Lead created — source: 99acres.'}],
+      karan:[{t:'Tomorrow, 11:00 AM', x:'Visit scheduled — Unit 310.'},{t:'4 days ago', x:'Call logged — asked about east-facing 3BHKs.'},{t:'9 days ago', x:'Lead created — source: Housing.com.'}],
+      rahul:[{t:'2 weeks ago', x:'Marked as Lost — reason: unit unavailable.'},{t:'3 weeks ago', x:"Site visit — didn't convert, cited unit availability."},{t:'5 weeks ago', x:'Lead created — source: 99acres.'}],
+      ananya:[{t:'2 weeks ago', x:'Marked as Lost — reason: unit unavailable.'},{t:'3 weeks ago', x:"Site visit — didn't convert, cited unit availability."},{t:'5 weeks ago', x:'Lead created — source: MagicBricks.'}],
+      vikram:[{t:'10 days ago', x:'Marked as Lost — reason: unit on hold.'},{t:'2 weeks ago', x:'Asked twice about Unit 210 availability.'},{t:'4 weeks ago', x:'Lead created — source: NoBroker.'}],
+      meera:[{t:'3 weeks ago', x:'Marked as Lost — reason: unit booked.'},{t:'1 month ago', x:'Site visit — liked Unit 612 layout.'},{t:'6 weeks ago', x:'Lead created — source: 99acres.'}],
+      farhan:[{t:'5 weeks ago', x:'Marked as Lost — reason: unit booked.'},{t:'6 weeks ago', x:'Asked about Unit 115 pricing.'},{t:'2 months ago', x:'Lead created — source: MagicBricks.'}],
+    },
+    feed:[], used:{t1:false,t2:false,t3:false}, pool4:['meera','farhan'],
+    expandedLead:null, expandedUnit:null, workflowSelected:'priya', flash:null,
+  };
+}
+let state = freshState();
+function unitPillClass(s){return s==='Available'?'avail':s==='Held'?'held':'booked';}
+function firstName(n){return n.split(' ')[0];}
+
+function cardInner(c){
+  let actions = '';
+  if(c.kind==='waiting' && !c.resolved){
+    const dis = !state.on ? 'disabled' : '';
+    actions = `<div class="card-actions"><button class="btn primary" ${dis} onclick="approve('${c.id}')">Send</button><button class="btn ghost" ${dis} onclick="reject('${c.id}')">Don't send</button></div>`;
+  }
+  if(c.kind==='prompt' && !c.resolved){
+    const dis = !state.on ? 'disabled' : '';
+    actions = `<div class="card-actions"><button class="btn primary" ${dis} onclick="promptYes('${c.id}')">Turn it on</button><button class="btn ghost" ${dis} onclick="promptNo('${c.id}')">Not yet</button></div>`;
+  }
+  let wa = '';
+  if(c.draft){
+    const meta = c.kind==='sent' ? `<span class="wa-meta">Sent ✓✓</span>` : '';
+    wa = `<div class="wa-label">↳ via WhatsApp</div><div class="wa-bubble">${c.draft}${meta}</div>`;
+  }
+  const link = c.leadKey ? `<div><button class="link-btn" onclick="gotoLead('${c.leadKey}')">View in ${firstName(state.leads[c.leadKey].name)}'s record →</button></div>` : '';
+  return `<span class="card-tag tag-${c.kind}">${c.tag}</span><p class="card-body">${c.body}</p>${wa}${actions}${link}`;
+}
+
+function render(){
+  document.getElementById('onToggle').checked = state.on;
+  document.getElementById('modeSeg').style.opacity = state.on ? 1 : .45;
+  document.getElementById('modeSeg').style.pointerEvents = state.on ? 'auto' : 'none';
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('active', b.dataset.mode===state.mode));
+  document.getElementById('statusDot').classList.toggle('off', !state.on);
+  document.getElementById('statusText').innerHTML = state.on
+    ? `Super Match is <b>on</b> · new matches <b>${state.mode==='auto' ? 'send on their own' : 'need your OK'}</b> · offering autonomy after <b>${state.threshold}</b> sends in a row`
+    : `Super Match is <b>off</b> · nothing will trigger until it's back on`;
+  document.getElementById('statVisits').textContent = state.stats.visits;
+  document.getElementById('statMatches').textContent = state.stats.matches;
+  document.getElementById('statSent').textContent = state.stats.sent;
+
+  document.getElementById('unitsBody').innerHTML = UNIT_ROWS.map(id=>{
+    const u = state.units[id]; const flash = state.flash===id ? ' flash' : '';
+    const open = state.expandedUnit===id;
+    let row = `<tr class="clickrow${flash}" onclick="toggleUnit('${id}')"><td class="chev-cell">${open?'▾':'▸'}</td><td>${id}</td><td>${u.config}</td><td class="num">${u.price}</td><td><span class="pill ${unitPillClass(u.status)}">${u.status}</span></td></tr>`;
+    if(open){
+      const visitNote = u.visit ? `Visit scheduled here for <b>${state.leads[u.visit].name}</b>.` : 'No visit currently scheduled on this unit.';
+      row += `<tr><td colspan="5" class="expand-td"><p class="mini-note">${visitNote}</p>${u.visit ? `<button class="link-btn" onclick="gotoLead('${u.visit}')">View ${firstName(state.leads[u.visit].name)}'s record →</button>` : ''}</td></tr>`;
+    }
+    return row;
+  }).join('');
+
+  document.getElementById('leadsBody').innerHTML = LEAD_ROWS.map(id=>{
+    const l = state.leads[id]; const open = state.expandedLead===id;
+    let row = `<tr class="clickrow" onclick="toggleLead('${id}')"><td class="chev-cell">${open?'▾':'▸'}</td><td><span class="lead-name">${l.name}</span><br><span class="lead-wants">${l.wants}</span></td><td><span class="pill ${l.tag}">${l.status}</span></td></tr>`;
+    if(open){
+      const agentCards = state.feed.filter(c=>c.leadKey===id);
+      const base = state.timelines[id].slice(0,2);
+      let mini = agentCards.map(c=>`<div class="tl-agent mini">${cardInner(c)}</div>`).join('');
+      mini += base.map(e=>`<div class="tl-item mini"><div class="tl-time">${e.t}</div><p>${e.x}</p></div>`).join('');
+      row += `<tr><td colspan="3" class="expand-td">${mini}<button class="link-btn" onclick="gotoLead('${id}')">View full record →</button></td></tr>`;
+    }
+    return row;
+  }).join('');
+
+  const list = document.getElementById('feedList');
+  document.getElementById('emptyNote').style.display = state.feed.length ? 'none' : 'block';
+  list.innerHTML = state.feed.map(c=>`<div class="card ${c.kind} enter">${cardInner(c)}</div>`).join('');
+
+  renderWorkflow();
+}
+
+function renderWorkflow(){
+  document.getElementById('leadChips').innerHTML = LEAD_ROWS.map(id=>{
+    const l = state.leads[id]; const sel = state.workflowSelected===id ? ' selected' : '';
+    const dotColor = l.tag==='active' ? 'var(--blue)' : 'var(--ink-soft)';
+    return `<button class="lead-chip${sel}" onclick="selectWorkflow('${id}')"><span class="chip-dot" style="background:${dotColor}"></span>${l.name}</button>`;
+  }).join('');
+
+  const id = state.workflowSelected; const l = state.leads[id];
+  const agentCards = state.feed.filter(c=>c.leadKey===id);
+  const base = state.timelines[id];
+  const agentHtml = agentCards.map(c=>`<div class="tl-item"><div class="tl-time">Just now</div><div class="tl-agent">${cardInner(c)}</div></div>`).join('');
+  const baseHtml = base.map(e=>`<div class="tl-item"><div class="tl-time">${e.t}</div><p>${e.x}</p></div>`).join('');
+  document.getElementById('recordCard').innerHTML = `
+    <div class="record-card">
+      <div class="record-head">
+        <div class="avatar">${l.name.split(' ').map(w=>w[0]).join('')}</div>
+        <div class="record-id"><div class="record-name">${l.name}</div><div class="record-meta">${l.phone} · Owner: ${l.owner}</div><div class="record-meta">${l.tag==='active' ? 'Wants' : 'Wanted'} ${l.wants}</div></div>
+        <span class="stage-pill ${l.tag==='active'?'stage-active':'stage-lost'}">${l.tag==='active' ? 'Active' : 'Lost'}</span>
+      </div>
+      <div class="rtabs"><span class="rtab">Overview</span><span class="rtab active">Activity</span><span class="rtab">Documents</span></div>
+      <div class="timeline">${agentHtml}${baseHtml}</div>
+    </div>`;
+}
+
+function toggleUnit(id){ state.expandedUnit = state.expandedUnit===id ? null : id; render(); }
+function toggleLead(id){ state.expandedLead = state.expandedLead===id ? null : id; render(); }
+function selectWorkflow(id){ state.workflowSelected = id; renderWorkflow(); }
+function gotoLead(id){
+  state.workflowSelected = id;
+  document.querySelectorAll('.vtab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.vtab[data-view="workflow"]').classList.add('active');
+  document.getElementById('view-admin').style.display = 'none';
+  document.getElementById('view-workflow').style.display = '';
+  renderWorkflow();
+}
+
+function addCards(cards){ state.feed = [...cards, ...state.feed]; render(); }
+function flashUnit(id){ state.flash = id; render(); setTimeout(()=>{state.flash=null;},900); }
+
+function t1(){
+  if(!state.on || state.used.t1) return; state.used.t1 = true; document.getElementById('t1').disabled = true;
+  state.units['402'].status = 'Booked'; state.units['402'].visit=null; state.stats.visits++; flashUnit('402');
+  addCards([{id:'c'+Date.now(), kind:'silent', resolved:true, tag:'Handled automatically', leadKey:'priya',
+    body:`Unit 402 just got booked by someone else. Priya Sharma has a visit on it today, so that visit is paused, and Unit 405 — same layout, ₹94L, available — is already lined up as the alternative to offer her. Nothing has been sent to Priya. That call is still yours.`}]);
+}
+function t2(){
+  if(!state.on || state.used.t2) return; state.used.t2 = true; document.getElementById('t2').disabled = true;
+  state.units['508'].status = 'Available'; flashUnit('508'); const auto = state.mode==='auto'; state.stats.matches+=2; if(auto) state.stats.sent+=2;
+  const capNote = `(2 leads matched this unit — well under the ${state.cap}-lead cap.)`;
+  addCards([
+    {id:'c'+Date.now()+'a', kind:auto?'sent':'waiting', resolved:auto, tag:auto?'Sent automatically':'Waiting on you', leadKey:'ananya',
+      body:`Unit 508 (2BHK west, ₹68L) just opened up. Ananya Rao asked about this exact unit twice before going cold. ${capNote}`,
+      draft:`Hi Ananya, the 2BHK west-facing unit at Riverside Greens you asked about is open again. Want another look?`},
+    {id:'c'+Date.now()+'b', kind:auto?'sent':'waiting', resolved:auto, tag:auto?'Sent automatically':'Waiting on you', leadKey:'rahul',
+      body:`Unit 508 also matches Rahul Mehta — went cold for the same reason, budget and layout both fit. ${capNote}`,
+      draft:`Hi Rahul, the 2BHK west-facing unit at Riverside Greens is available again, in your range. Worth a second look?`}
+  ]);
+}
+function t3(){
+  if(!state.on || state.used.t3) return; state.used.t3 = true; document.getElementById('t3').disabled = true;
+  state.units['210'].status = 'Available'; flashUnit('210'); const auto = state.mode==='auto'; state.stats.matches++; if(auto) state.stats.sent++;
+  addCards([{id:'c'+Date.now(), kind:auto?'sent':'waiting', resolved:auto, tag:auto?'Sent automatically':'Waiting on you', leadKey:'vikram',
+    body:`Unit 210 just came off hold. Vikram Nair wanted this exact unit and went cold only because it wasn't available. (1 lead matched — well under the ${state.cap}-lead cap.)`,
+    draft:`Hi Vikram, the 3BHK west-facing unit at Riverside Greens you were after is available again. Want to take a look?`}]);
+}
+function t4(){
+  if(!state.on || state.pool4.length===0) return; const key = state.pool4.shift();
+  const unitId = key==='meera' ? '612' : '115'; const label = key==='meera' ? '2BHK east-facing' : '1BHK east-facing';
+  state.units[unitId].status = 'Available'; flashUnit(unitId); const lead = state.leads[key]; const auto = state.mode==='auto';
+  state.stats.matches++; if(auto) state.stats.sent++;
+  document.getElementById('t4').disabled = state.pool4.length===0;
+  addCards([{id:'c'+Date.now(), kind:auto?'sent':'waiting', resolved:auto, tag:auto?'Sent automatically — autonomous mode is on':'Waiting on you', leadKey:key,
+    body:`Unit ${unitId} just turned over. ${lead.name}${key==='meera' ? ' liked it but it was already booked when she asked.' : ' asked about it last month.'} (1 lead matched — well under the ${state.cap}-lead cap.)`,
+    draft:`Hi ${firstName(lead.name)}, the ${label} unit at Riverside Greens is available again — thought you'd want to know.`}]);
+}
+function approve(id){
+  const c = state.feed.find(x=>x.id===id); if(!c) return;
+  c.kind='sent'; c.tag='Sent'; c.resolved=true; state.streak++; state.stats.sent++;
+  if(state.streak>=state.threshold && !state.promptShown && state.mode==='approval'){
+    state.promptShown = true;
+    addCards([{id:'p'+Date.now(), kind:'prompt', resolved:false, tag:'Worth asking',
+      body:`You've sent the last ${state.threshold} matches without changing anything. Want Super Match to send matches like this on its own from here?`}]);
+  } else render();
+}
+function reject(id){
+  const c = state.feed.find(x=>x.id===id); if(!c) return;
+  c.kind='notsent'; c.tag='Not sent'; c.resolved=true; state.streak=0; render();
+}
+function promptYes(id){ const c = state.feed.find(x=>x.id===id); c.resolved=true; c.tag='Turned on'; c.body='Autonomous mode is on. New matches like these will send on their own from now, no tap needed.'; setMode('auto'); }
+function promptNo(id){ const c = state.feed.find(x=>x.id===id); c.resolved=true; c.tag='Got it'; c.body='Still asking for your OK on new matches.'; render(); }
+function setMode(m){ state.mode = m; render(); }
+
+document.getElementById('onToggle').addEventListener('change', e=>{state.on = e.target.checked; render();});
+document.getElementById('modeSeg').addEventListener('click', e=>{const btn=e.target.closest('button'); if(!btn) return; setMode(btn.dataset.mode);});
+document.getElementById('thresholdInput').addEventListener('input', e=>{state.threshold = Math.max(1, parseInt(e.target.value)||3); render();});
+document.getElementById('capInput').addEventListener('input', e=>{state.cap = Math.max(1, parseInt(e.target.value)||5); render();});
+document.getElementById('t1').addEventListener('click', t1);
+document.getElementById('t2').addEventListener('click', t2);
+document.getElementById('t3').addEventListener('click', t3);
+document.getElementById('t4').addEventListener('click', t4);
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  state = freshState();
+  ['t1','t2','t3','t4'].forEach(id=>document.getElementById(id).disabled=false);
+  document.getElementById('thresholdInput').value = 3; document.getElementById('capInput').value = 5;
+  render();
+});
+document.querySelectorAll('.vtab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.vtab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
+    document.getElementById('view-admin').style.display = tab.dataset.view==='admin' ? '' : 'none';
+    document.getElementById('view-workflow').style.display = tab.dataset.view==='workflow' ? '' : 'none';
+  });
+});
+document.querySelectorAll('.subtab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
+    document.getElementById('sub-live').style.display = tab.dataset.sub==='live' ? '' : 'none';
+    document.getElementById('sub-settings').style.display = tab.dataset.sub==='settings' ? '' : 'none';
+  });
+});
+
+render();
+</script>
+</body>
+</html>
