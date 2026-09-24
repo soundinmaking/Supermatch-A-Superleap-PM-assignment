@@ -32,7 +32,7 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Deployment
 
 Deploys to Vercel with zero configuration — framework preset "Next.js", no environment
-variables required.
+variables required. https://supermatch-a-superleap-pm-assignmen.vercel.app/
 
 ## Author
 
